@@ -1037,7 +1037,7 @@ class Rating(MD_Value, float):
 
 
 class Metadata(QtCore.QObject):
-    unsaved = QtCore.pyqtSignal(bool)
+    unsaved = QtCore.Signal(bool)
 
     # type of each Photini data field's data
     _data_type = {

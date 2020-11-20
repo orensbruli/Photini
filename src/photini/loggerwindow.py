@@ -49,8 +49,8 @@ class StreamProxy(QtCore.QObject):
     # only the GUI thread is allowed to write messages in the
     # LoggerWindow, so this class acts as a proxy, passing messages
     # over Qt signal/slot for thread safety
-    flush_text = QtCore.pyqtSignal()
-    write_text = QtCore.pyqtSignal(str)
+    flush_text = QtCore.Signal()
+    write_text = QtCore.Signal(str)
 
     def write(self, msg):
         msg = msg.strip()
@@ -115,14 +115,14 @@ class LoggerWindow(QtWidgets.QWidget):
         if sys.stdout:
             sys.stdout = OutputInterceptor('stdout', sys.stdout)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def shutdown(self):
         self.stream_proxy.write_text.disconnect()
         self.stream_proxy.flush_text.disconnect()
         for handler in list(self.logger.handlers):
             self.logger.removeHandler(handler)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def save(self):
         file_name = QtWidgets.QFileDialog.getSaveFileName(
@@ -134,11 +134,11 @@ class LoggerWindow(QtWidgets.QWidget):
             with open(file_name, 'w') as of:
                 of.write(self.text.toPlainText())
 
-    @QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def write(self, msg):
         self.text.append(msg)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def flush(self):
         if self.isHidden():
             self.show()

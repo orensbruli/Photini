@@ -40,45 +40,28 @@ config = BaseConfigStore('editor')
 using_pyqt5 = config.get('pyqt', 'using_pyqt5', 'auto')
 using_qtwebengine = config.get('pyqt', 'using_qtwebengine', 'auto')
 
-if using_pyqt5 == 'auto':
-    try:
-        from PyQt5 import QtCore
-        using_pyqt5 = True
-    except ImportError:
-        using_pyqt5 = False
-else:
-    using_pyqt5 = eval(using_pyqt5)
 
-if using_pyqt5 and using_qtwebengine == 'auto':
+
+
+try:
+    from PySide2 import QtWebEngineWidgets
+    using_qtwebengine = True
+except ImportError:
+    using_qtwebengine = False
     try:
-        from PyQt5 import QtWebEngineWidgets
-        using_qtwebengine = True
+        from Pyside2 import QtWebKit
     except ImportError:
-        using_qtwebengine = False
-        try:
-            from PyQt5 import QtWebKit
-        except ImportError:
-            using_qtwebengine = True
-else:
-    using_qtwebengine = using_pyqt5 and eval(using_qtwebengine)
+        using_qtwebengine = True
 
 if using_pyqt5:
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    from PyQt5.QtCore import Qt
-    from PyQt5.QtNetwork import QNetworkProxy
+    from PySide2 import QtCore, QtGui, QtWidgets
+    from PySide2.QtCore import Qt
+    from PySide2.QtNetwork import QNetworkProxy
     if using_qtwebengine:
-        from PyQt5 import QtWebChannel, QtWebEngineWidgets
+        from PySide2 import QtWebChannel, QtWebEngineWidgets
     else:
-        from PyQt5 import QtWebKit, QtWebKitWidgets
-else:
-    import sip
-    sip.setapi('QString', 2)
-    sip.setapi('QVariant', 2)
-    from PyQt4 import QtCore, QtGui, QtWebKit
-    QtWidgets = QtGui
-    QtWebKitWidgets = QtWebKit
-    from PyQt4.QtCore import Qt
-    from PyQt4.QtNetwork import QNetworkProxy
+        from PySide2 import QtWebKit, QtWebKitWidgets
+
 
 if using_qtwebengine:
     QWebPage = QtWebEngineWidgets.QWebEnginePage
@@ -102,7 +85,7 @@ translate = QtCore.QCoreApplication.translate
 
 qt_version_info = namedtuple(
     'qt_version_info', ('major', 'minor', 'micro'))._make(
-        map(int, QtCore.QT_VERSION_STR.split('.')))
+        map(int, QtCore.__version__.split('.')))
 
 
 # decorator for methods called by Qt that logs any exception raised
@@ -232,7 +215,7 @@ class ComboBox(QtWidgets.QComboBox):
 
 
 class MultiLineEdit(QtWidgets.QPlainTextEdit):
-    editingFinished = QtCore.pyqtSignal()
+    editingFinished = QtCore.Signal()
 
     def __init__(self, spell_check=False, *arg, **kw):
         super(MultiLineEdit, self).__init__(*arg, **kw)
@@ -345,7 +328,7 @@ class SingleLineEdit(MultiLineEdit):
 
 
 class Slider(QtWidgets.QSlider):
-    editing_finished = QtCore.pyqtSignal()
+    editing_finished = QtCore.Signal()
 
     def __init__(self, *arg, **kw):
         super(Slider, self).__init__(*arg, **kw)
@@ -357,7 +340,7 @@ class Slider(QtWidgets.QSlider):
         self.editing_finished.emit()
         super(Slider, self).focusOutEvent(event)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def slider_pressed(self):
         self._is_multiple = False
@@ -388,8 +371,8 @@ class SquareButton(QtWidgets.QPushButton):
 
 
 class StartStopButton(QtWidgets.QPushButton):
-    click_start = QtCore.pyqtSignal()
-    click_stop = QtCore.pyqtSignal()
+    click_start = QtCore.Signal()
+    click_stop = QtCore.Signal()
 
     def __init__(self, start_text, stop_text, *arg, **kw):
         super(StartStopButton, self).__init__(*arg, **kw)
@@ -417,7 +400,7 @@ class StartStopButton(QtWidgets.QPushButton):
         else:
             self.setText(self.start_text)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def do_clicked(self):
         if self.checked:
             self.click_stop.emit()

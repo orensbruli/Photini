@@ -33,7 +33,7 @@ translate = QtCore.QCoreApplication.translate
 
 
 class LocationInfo(QtWidgets.QWidget):
-    new_value = QtCore.pyqtSignal(object, dict)
+    new_value = QtCore.Signal(object, dict)
 
     def __init__(self, *args, **kw):
         super(LocationInfo, self).__init__(*args, **kw)
@@ -72,14 +72,14 @@ class LocationInfo(QtWidgets.QWidget):
             new_value[key] = self.members[key].get_value().strip() or None
         return new_value
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def editing_finished(self):
         self.new_value.emit(self, self.get_value())
 
 
 class QTabBar(QtWidgets.QTabBar):
-    context_menu = QtCore.pyqtSignal(QtGui.QContextMenuEvent)
+    context_menu = QtCore.Signal(QtGui.QContextMenuEvent)
 
     @catch_all
     def contextMenuEvent(self, event):
@@ -132,7 +132,7 @@ class TabWidget(QtWidgets.QWidget):
         # other init
         self.image_list.image_list_changed.connect(self.image_list_changed)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def image_list_changed(self):
         self.coords.refresh()
@@ -145,12 +145,12 @@ class TabWidget(QtWidgets.QWidget):
     def do_not_close(self):
         return False
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def new_coords(self):
         self.auto_location.setEnabled(bool(self.coords.get_value()))
 
-    @QtCore.pyqtSlot(QtGui.QContextMenuEvent)
+    @QtCore.Slot(QtGui.QContextMenuEvent)
     @catch_all
     def location_tab_context_menu(self, event):
         idx = self.location_info.tabBar().tabAt(event.pos())
@@ -162,7 +162,7 @@ class TabWidget(QtWidgets.QWidget):
             'AddressTab', 'Delete location'), self.delete_location)
         action = menu.exec_(event.globalPos())
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def duplicate_location(self):
         idx = self.location_info.currentIndex()
@@ -176,7 +176,7 @@ class TabWidget(QtWidgets.QWidget):
         # display data
         self.display_location()
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def delete_location(self):
         idx = self.location_info.currentIndex()
@@ -195,14 +195,14 @@ class TabWidget(QtWidgets.QWidget):
         # display data
         self.display_location()
 
-    @QtCore.pyqtSlot(int, int)
+    @QtCore.Slot(int, int)
     @catch_all
     def location_tab_moved(self, idx_a, idx_b):
         self.pending_move = idx_a, idx_b
         # do actual swap when idle to avoid seg fault
         QtCore.QTimer.singleShot(0, self._location_tab_moved)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def _location_tab_moved(self):
         idx_a, idx_b = self.pending_move
@@ -237,7 +237,7 @@ class TabWidget(QtWidgets.QWidget):
             location_list[idx - 1] = location
             image.metadata.location_shown = location_list
 
-    @QtCore.pyqtSlot(object, dict)
+    @QtCore.Slot(object, dict)
     @catch_all
     def new_location(self, widget, new_value):
         idx = self.location_info.indexOf(widget)
@@ -256,7 +256,7 @@ class TabWidget(QtWidgets.QWidget):
             text = translate('AddressTab', 'subject {}').format(idx)
         self.location_info.setTabText(idx, text)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def display_location(self):
         images = self.image_list.get_selected_images()
@@ -305,7 +305,7 @@ class TabWidget(QtWidgets.QWidget):
                 for key in widget.members:
                     widget.members[key].set_value(None)
 
-    @QtCore.pyqtSlot(list)
+    @QtCore.Slot(list)
     @catch_all
     def new_selection(self, selection):
         self.location_info.setEnabled(bool(selection))
@@ -313,7 +313,7 @@ class TabWidget(QtWidgets.QWidget):
         self.auto_location.setEnabled(bool(self.coords.get_value()))
         self.display_location()
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def get_address(self):
         location = self.geocoder.get_address(self.coords.get_value())

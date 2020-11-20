@@ -178,7 +178,7 @@ class CameraSource(object):
 
 
 class FileCopier(QtCore.QObject):
-    output = QtCore.pyqtSignal(dict, six.text_type)
+    output = QtCore.Signal(dict, six.text_type)
 
     def __init__(self, source, copy_list, move, updating, *args, **kwds):
         super(FileCopier, self).__init__(*args, **kwds)
@@ -188,7 +188,7 @@ class FileCopier(QtCore.QObject):
         self.updating = updating
         self.running = True
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def start(self):
         status = 'ok'
@@ -218,14 +218,14 @@ def get_camera_list():
 
 class NameMangler(QtCore.QObject):
     number_parser = re.compile(r'(\d+)')
-    new_example = QtCore.pyqtSignal(str)
+    new_example = QtCore.Signal(str)
 
     def __init__(self, parent=None):
         super(NameMangler, self).__init__(parent)
         self.example = None
         self.format_string = None
 
-    @QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     @catch_all
     def new_format(self, format_string):
         self.format_string = format_string
@@ -361,7 +361,7 @@ class TabWidget(QtWidgets.QWidget):
         self.refresh()
         self.list_files()
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     @catch_all
     def new_source(self, idx):
         self.source = None
@@ -404,7 +404,7 @@ class TabWidget(QtWidgets.QWidget):
         idx = self.source_selector.count() - (1 + len(folders))
         self.source_selector.setCurrentIndex(idx)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def path_format_finished(self):
         if self.source:
@@ -412,7 +412,7 @@ class TabWidget(QtWidgets.QWidget):
                 self.config_section, 'path_format', self.nm.format_string)
         self.show_file_list()
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def refresh(self):
         was_blocked = self.source_selector.blockSignals(True)
@@ -466,11 +466,11 @@ class TabWidget(QtWidgets.QWidget):
         result = dialog.exec_()
         return result == QtWidgets.QMessageBox.Cancel
 
-    @QtCore.pyqtSlot(list)
+    @QtCore.Slot(list)
     def new_selection(self, selection):
         pass
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def list_files(self):
         file_data = {}
@@ -491,7 +491,7 @@ class TabWidget(QtWidgets.QWidget):
         self.file_data = file_data
         self.sort_file_list()
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def sort_file_list(self):
         if eval(self.config_store.get('controls', 'sort_date', 'False')):
@@ -531,7 +531,7 @@ class TabWidget(QtWidgets.QWidget):
         self.file_list_widget.scrollToItem(
             first_active, QtWidgets.QAbstractItemView.PositionAtTop)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def selection_changed(self):
         count = len(self.file_list_widget.selectedItems())
@@ -541,12 +541,12 @@ class TabWidget(QtWidgets.QWidget):
             self.move_button.setEnabled(count > 0)
             self.copy_button.setEnabled(count > 0)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def select_all(self):
         self.select_files(datetime.min)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def select_new(self):
         since = datetime.min
@@ -580,12 +580,12 @@ class TabWidget(QtWidgets.QWidget):
         self.file_list_widget.scrollToItem(
             first_active, QtWidgets.QAbstractItemView.PositionAtTop)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def move_selected(self):
         self.copy_selected(move=True)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def copy_selected(self, move=False):
         copy_list = []
@@ -617,7 +617,7 @@ class TabWidget(QtWidgets.QWidget):
         self.file_copier_thread.started.connect(self.file_copier.start)
         self.file_copier_thread.start()
 
-    @QtCore.pyqtSlot(dict, six.text_type)
+    @QtCore.Slot(dict, six.text_type)
     @catch_all
     def file_copied(self, info, status):
         if not info:
@@ -650,13 +650,13 @@ class TabWidget(QtWidgets.QWidget):
                 self.selection_changed()
                 break
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def stop_copy(self):
         if self.file_copier:
             self.file_copier.running = False
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def shutdown(self):
         if self.file_copier:

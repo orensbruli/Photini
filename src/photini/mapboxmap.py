@@ -90,7 +90,7 @@ class MapboxGeocoder(GeocoderBase):
         widget.clicked.connect(self.load_mapbox_tos)
         return [widget]
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def load_mapbox_tos(self):
         QtGui.QDesktopServices.openUrl(

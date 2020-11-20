@@ -32,7 +32,7 @@ Every Photini tab has to have the following interface:
            # the user closing the Photini program.
            return False
 
-       @QtCore.pyqtSlot(list)
+       @QtCore.Slot(list)
        def new_selection(self, selection):
            # Called when the image thumbnail area has a new selection. Most tabs will need to
            # update their displayed metadata to suit the selection.

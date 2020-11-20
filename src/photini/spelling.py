@@ -46,7 +46,7 @@ if not Gspell:
 logger = logging.getLogger(__name__)
 
 class SpellCheck(QtCore.QObject):
-    new_dict = QtCore.pyqtSignal()
+    new_dict = QtCore.Signal()
 
     def __init__(self, *arg, **kw):
         super(SpellCheck, self).__init__(*arg, **kw)
@@ -80,7 +80,7 @@ class SpellCheck(QtCore.QObject):
             return self.dict.tag
         return ''
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     @catch_all
     def enable(self, enabled):
         self.enabled = enabled and bool(Gspell or enchant)

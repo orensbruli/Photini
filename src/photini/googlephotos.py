@@ -226,7 +226,7 @@ class GooglePhotosSession(UploaderSession):
 
 
 class GoogleUploadConfig(QtWidgets.QWidget):
-    new_set = QtCore.pyqtSignal()
+    new_set = QtCore.Signal()
 
     def __init__(self, *arg, **kw):
         super(GoogleUploadConfig, self).__init__(*arg, **kw)
@@ -342,7 +342,7 @@ class TabWidget(PhotiniUploader):
             }
         return params
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def new_set(self):
         title, OK = QtWidgets.QInputDialog.getText(

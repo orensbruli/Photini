@@ -98,7 +98,7 @@ class EditSettings(QtWidgets.QDialog):
         # add panel to scroll area after its size is known
         scroll_area.setWidget(panel)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def new_write_if(self):
         if_mode = self.write_if.isChecked()
@@ -107,7 +107,7 @@ class EditSettings(QtWidgets.QDialog):
         if not if_mode:
             self.sc_always.setChecked(True)
 
-    @QtCore.pyqtSlot(QtWidgets.QAbstractButton)
+    @QtCore.Slot(QtWidgets.QAbstractButton)
     @catch_all
     def button_clicked(self, button):
         if button != self.button_box.button(QtWidgets.QDialogButtonBox.Apply):

@@ -98,13 +98,13 @@ class MapWebKitPage(MapWebPage):
         self.mainFrame().javaScriptWindowObjectCleared.connect(
             self.java_script_window_object_cleared)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def java_script_window_object_cleared(self):
         self.mainFrame().addToJavaScriptWindowObject(
             'python', self.call_handler)
 
-    @QtCore.pyqtSlot(QtCore.QUrl)
+    @QtCore.Slot(QtCore.QUrl)
     @catch_all
     def link_clicked(self, url):
         if url.isLocalFile():
@@ -118,37 +118,37 @@ class MapWebKitPage(MapWebPage):
 class CallHandler(QtCore.QObject):
     # Simple object (with no attributes) for JavaScript to send signals
     # to and hence invoke the methods JavaScript wants to call.
-    @QtCore.pyqtSlot(int, six.text_type)
+    @QtCore.Slot(int, six.text_type)
     def log(self, level, message):
         logger.log(level, message)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def initialize_finished(self):
         self.parent().initialize_finished()
 
-    @QtCore.pyqtSlot(QtCore.QVariant)
+    @QtCore.Slot()
     def new_status(self, status):
         self.parent().new_status(status)
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def marker_click(self, marker_id):
         self.parent().marker_click(marker_id)
 
-    @QtCore.pyqtSlot(float, float)
+    @QtCore.Slot(float, float)
     def marker_drag(self, lat, lng):
         self.parent().marker_drag(lat, lng)
 
-    @QtCore.pyqtSlot(float, float, int)
+    @QtCore.Slot(float, float, int)
     def marker_drag_end(self, lat, lng, marker_id):
         self.parent().marker_drag_end(lat, lng, marker_id)
 
-    @QtCore.pyqtSlot(float, float)
+    @QtCore.Slot(float, float)
     def marker_drop(self, lat, lng):
         self.parent().marker_drop(lat, lng)
 
 
 class MapWebView(QWebView):
-    drop_text = QtCore.pyqtSignal(int, int, six.text_type)
+    drop_text = QtCore.Signal(int, int, six.text_type)
 
     def __init__(self, call_handler, *args, **kwds):
         super(MapWebView, self).__init__(*args, **kwds)
@@ -186,7 +186,7 @@ class MapWebView(QWebView):
 
 
 class LatLongDisplay(SingleLineEdit):
-    changed = QtCore.pyqtSignal()
+    changed = QtCore.Signal()
 
     def __init__(self, image_list, *args, **kwds):
         super(LatLongDisplay, self).__init__(*args, **kwds)
@@ -197,7 +197,7 @@ class LatLongDisplay(SingleLineEdit):
         self.setEnabled(False)
         self.editingFinished.connect(self.editing_finished)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def editing_finished(self):
         text = self.get_value().strip()
@@ -304,7 +304,7 @@ class PhotiniMap(QtWidgets.QWidget):
         # other init
         self.image_list.image_list_changed.connect(self.image_list_changed)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def image_list_changed(self):
         self.redraw_markers()
@@ -312,7 +312,7 @@ class PhotiniMap(QtWidgets.QWidget):
         self.update_altitude()
         self.see_selection()
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def initialise(self):
         page = '''<!DOCTYPE html>
@@ -390,7 +390,7 @@ class PhotiniMap(QtWidgets.QWidget):
                 self.app.config_store.set(
                     'map', key, repr(self.map_status[key]))
 
-    @QtCore.pyqtSlot(int, int, six.text_type)
+    @QtCore.Slot(int, int, six.text_type)
     @catch_all
     def drop_text(self, x, y, text):
         self.dropped_images = eval(text)
@@ -406,14 +406,14 @@ class PhotiniMap(QtWidgets.QWidget):
         self.coords.refresh()
         self.see_selection()
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def new_coords(self):
         self.redraw_markers()
         self.update_altitude()
         self.see_selection()
 
-    @QtCore.pyqtSlot(object)
+    @QtCore.Slot(object)
     @catch_all
     def new_altitude(self, value):
         for image in self.image_list.get_selected_images():
@@ -454,7 +454,7 @@ class PhotiniMap(QtWidgets.QWidget):
             return
         self.JavaScript('fitPoints({})'.format(repr(locations)))
 
-    @QtCore.pyqtSlot(list)
+    @QtCore.Slot(list)
     @catch_all
     def new_selection(self, selection):
         self.redraw_markers()
@@ -503,14 +503,14 @@ class PhotiniMap(QtWidgets.QWidget):
             latlngs.append([[x[1], x[2]] for x in t])
         self.JavaScript('plotTrack({!r})'.format(latlngs))
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def get_altitude(self):
         altitude = self.geocoder.get_altitude(self.coords.get_value())
         if altitude is not None:
             self.new_altitude(round(altitude, 1))
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def search(self, search_string=None, bounded=True):
         if not search_string:
@@ -539,7 +539,7 @@ class PhotiniMap(QtWidgets.QWidget):
             self.edit_box.addItem(
                 translate('MapTabsAll', '<repeat search>', 'repeat'))
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     @catch_all
     def goto_search_result(self, idx):
         self.edit_box.setCurrentIndex(0)

@@ -157,13 +157,13 @@ class OpenCage(GeocoderBase):
         tou_osm.clicked.connect(self.load_tou_osm)
         return [tou_opencage, tou_osm]
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def load_tou_opencage(self):
         QtGui.QDesktopServices.openUrl(
             QtCore.QUrl('https://geocoder.opencagedata.com/'))
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     @catch_all
     def load_tou_osm(self):
         QtGui.QDesktopServices.openUrl(
